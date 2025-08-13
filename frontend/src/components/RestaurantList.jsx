@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import ConfirmationModal from './ConfirmationModal';
 
 const RestaurantList = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [restaurantToDelete, setRestaurantToDelete] = useState(null);
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -28,6 +31,36 @@ const RestaurantList = () => {
 
     fetchRestaurants();
   }, []);
+
+  const handleDeleteClick = (restaurant) => {
+    setRestaurantToDelete(restaurant);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await axios.delete(`http://localhost:5000/api/restaurants/${restaurantToDelete._id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('userToken')}`
+        }
+      });
+      
+      // Remove the deleted restaurant from the list
+      setRestaurants(restaurants.filter(r => r._id !== restaurantToDelete._id));
+      toast.success('Restaurant deleted successfully');
+    } catch (err) {
+      console.error('Delete error:', err);
+      toast.error('Failed to delete restaurant. Please try again.');
+    } finally {
+      setShowDeleteModal(false);
+      setRestaurantToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setRestaurantToDelete(null);
+  };
 
   if (loading) return <div className="p-4">Loading restaurants...</div>;
   if (error) return <div className="p-4 text-red-500">{error}</div>;
@@ -58,22 +91,40 @@ const RestaurantList = () => {
                   </span>
                 ))}
               </div>
-              <Link
-                to={`/restaurants/${restaurant._id}`}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-              >
-                View Details →
-              </Link>
-              <Link
-  to={`/restaurants/edit/${restaurant._id}`}
-  className="mt-2 inline-block text-green-600 hover:text-green-800"
->
-  Edit
-</Link>
+              <div className="flex justify-between items-center">
+                <Link
+                  to={`/restaurants/${restaurant._id}`}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                >
+                  View Details →
+                </Link>
+                <div className="flex space-x-2">
+                  <Link
+                    to={`/restaurants/edit/${restaurant._id}`}
+                    className="text-green-600 hover:text-green-800 text-sm font-medium"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteClick(restaurant)}
+                    className="text-red-600 hover:text-red-800 text-sm font-medium"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
       )}
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Confirm Deletion"
+        message={`Are you sure you want to delete "${restaurantToDelete?.name}"? This action cannot be undone.`}
+      />
     </div>
   );
 };

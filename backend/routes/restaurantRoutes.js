@@ -5,7 +5,8 @@ const {
   createRestaurant,
   getRestaurants,
   getRestaurant,
-  updateRestaurant
+  updateRestaurant,
+  deleteRestaurant
 } = require('../controllers/restaurantController');
 
 router.route('/')
