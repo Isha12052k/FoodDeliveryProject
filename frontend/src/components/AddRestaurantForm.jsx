@@ -47,20 +47,26 @@ const AddRestaurantForm = () => {
   });
 
   const onSubmit = async (values) => {
-    try {
-      setIsSubmitting(true);
-      const response = await axios.post('/api/restaurants', values, {
+  try {
+    setIsSubmitting(true);
+    const response = await axios.post(
+      'http://localhost:5000/api/restaurants', // Full URL
+      values,
+      {
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('userToken')}`
         }
-      });
-      navigate('/restaurants');
-    } catch (error) {
-      setError(error.response?.data?.message || 'Failed to create restaurant');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+      }
+    );
+    navigate('/restaurants');
+  } catch (error) {
+    console.error('Error:', error);
+    setError(error.response?.data?.message || 'Failed to create restaurant');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div className="max-w-4xl mx-auto p-6">
