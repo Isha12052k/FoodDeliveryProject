@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import RestaurantList from '../components/RestaurantList';
 import AddRestaurantForm from '../components/AddRestaurantForm';
 
 const Restaurants = () => {
@@ -15,10 +16,7 @@ const Restaurants = () => {
         </Link>
       </div>
       
-      {/* Restaurant List would go here */}
-      
-      {/* Add Restaurant Form (or could be separate route) */}
-      <AddRestaurantForm />
+      <RestaurantList />
     </div>
   );
 };
