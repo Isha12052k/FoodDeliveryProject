@@ -7,6 +7,7 @@ import Tasks from './pages/Tasks';
 import Dashboard from './pages/Dashboard';
 import Restaurants from './pages/Restaurants';
 import AddRestaurantForm from './components/AddRestaurantForm';
+import EditRestaurantForm from './components/EditRestaurantForm';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/restaurants" element={<Restaurants />} />
         <Route path="/restaurants/new" element={<AddRestaurantForm />} />
+        <Route path="/restaurants/edit/:id" element={<EditRestaurantForm />} />
       </Routes>
     </Router>
   );

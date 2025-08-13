@@ -64,6 +64,12 @@ const RestaurantList = () => {
               >
                 View Details →
               </Link>
+              <Link
+  to={`/restaurants/edit/${restaurant._id}`}
+  className="mt-2 inline-block text-green-600 hover:text-green-800"
+>
+  Edit
+</Link>
             </div>
           ))}
         </div>
