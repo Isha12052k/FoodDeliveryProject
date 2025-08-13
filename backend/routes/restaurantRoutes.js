@@ -11,9 +11,11 @@ const {
 router.route('/')
   .get(protect, getRestaurants)
   .post(protect, createRestaurant);
+  
 
 router.route('/:id')
   .get(protect, getRestaurant)
-  .put(protect, updateRestaurant);
+  .put(protect, updateRestaurant)
+  .delete(protect, deleteRestaurant);
 
 module.exports = router;

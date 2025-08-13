@@ -109,10 +109,40 @@ const updateRestaurant = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Soft delete restaurant
+// @route   DELETE /api/restaurants/:id
+// @access  Private
+const deleteRestaurant = asyncHandler(async (req, res) => {
+  const restaurant = await Restaurant.findOneAndUpdate(
+    {
+      _id: req.params.id,
+      owner: req.user.id,
+      isDeleted: false
+    },
+    {
+      isDeleted: true,
+      deletedAt: new Date()
+    },
+    { new: true }
+  );
+
+  if (!restaurant) {
+    res.status(404);
+    throw new Error('Restaurant not found or already deleted');
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Restaurant deleted successfully',
+    data: restaurant
+  });
+});
+
 // Update exports
 module.exports = {
   createRestaurant,
   getRestaurants,
   getRestaurant,
-  updateRestaurant
+  updateRestaurant,
+  deleteRestaurant
 };
