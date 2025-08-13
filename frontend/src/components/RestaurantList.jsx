@@ -123,7 +123,7 @@ const RestaurantList = () => {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         title="Confirm Deletion"
-        message={`Are you sure you want to delete "${restaurantToDelete?.name}"? This action cannot be undone.`}
+        message={`Are you sure you want to delete "${restaurantToDelete?.name}" forever?`}
       />
     </div>
   );
