@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 
 const RestaurantDetails = () => {
   const { id } = useParams();
@@ -10,6 +11,8 @@ const RestaurantDetails = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [menuItemToDelete, setMenuItemToDelete] = useState(null);
 
   useEffect(() => {
     if (!id || id.length !== 24) {
@@ -72,6 +75,38 @@ const RestaurantDetails = () => {
   if (error) return <div className="p-4 text-red-500">{error}</div>;
   if (!restaurant) return <div className="p-4">Restaurant not found</div>;
 
+  const handleDeleteClick = (menuItem) => {
+    setMenuItemToDelete(menuItem);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/restaurants/${id}/menu/${menuItemToDelete._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('userToken')}`
+          }
+        }
+      );
+            // Remove the deleted item from the state
+      setMenuItems(menuItems.filter(item => item._id !== menuItemToDelete._id));
+      toast.success('Menu item deleted successfully');
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error(error.response?.data?.message || 'Failed to delete menu item');
+    } finally {
+      setShowDeleteModal(false);
+      setMenuItemToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setMenuItemToDelete(null);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -109,12 +144,20 @@ const RestaurantDetails = () => {
                 </span>
               )}
 
-              <Link
-                to={`/restaurants/${id}/menu/${item._id}/edit`}
-                className="absolute top-2 right-2 bg-blue-500 text-white p-1 rounded hover:bg-blue-600"
-              >
-                Edit
-              </Link>
+<div className="absolute top-2 right-2 flex space-x-2">
+                <Link
+                  to={`/restaurants/${id}/menu/${item._id}/edit`}
+                  className="bg-blue-500 text-white p-1 rounded hover:bg-blue-600"
+                >
+                  Edit
+                </Link>
+                <button
+                  onClick={() => handleDeleteClick(item)}
+                  className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
 
               {item.image && (
                 <img 
@@ -135,6 +178,12 @@ const RestaurantDetails = () => {
           <p>No menu items found. Add one to get started!</p>
         </div>
       )}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        itemName={menuItemToDelete?.name || ''}
+      />
     </div>
   );
 };
