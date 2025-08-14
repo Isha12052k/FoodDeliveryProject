@@ -93,10 +93,41 @@ const getMenuItem = asyncHandler(async (req, res) => {
   res.status(200).json(menuItem);
 });
 
-// Update the exports at the bottom
+// Add this to your existing controller
+// @desc    Delete menu item
+// @route   DELETE /api/restaurants/:restaurantId/menu/:id
+// @access  Private
+const deleteMenuItem = asyncHandler(async (req, res) => {
+  const restaurant = await Restaurant.findOne({
+    _id: req.params.restaurantId,
+    owner: req.user.id
+  });
+
+  if (!restaurant) {
+    res.status(403);
+    throw new Error('Not authorized to modify items in this restaurant');
+  }
+
+  const menuItem = await MenuItem.findOneAndDelete({
+    _id: req.params.id,
+    restaurant: req.params.restaurantId
+  });
+
+  if (!menuItem) {
+    res.status(404);
+    throw new Error('Menu item not found');
+  }
+
+  // TODO: Add image file deletion logic here if needed
+
+  res.status(200).json({ success: true, data: {} });
+});
+
+// all exports
 module.exports = {
   createMenuItem,
   getMenuItems,
   getMenuItem,
-  updateMenuItem
+  updateMenuItem,
+  deleteMenuItem
 };

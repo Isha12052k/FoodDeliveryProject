@@ -4,7 +4,8 @@ const {
   createMenuItem, 
   getMenuItems,
   getMenuItem,
-  updateMenuItem
+  updateMenuItem,
+  deleteMenuItem
 } = require('../controllers/menuItemController');
 const { protect } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
@@ -15,6 +16,7 @@ router.route('/:restaurantId/menu')
 
 router.route('/:restaurantId/menu/:id')
   .get(getMenuItem)
-  .put(protect, upload.single('image'), updateMenuItem);
+  .put(protect, upload.single('image'), updateMenuItem)
+  .delete(protect, deleteMenuItem);
 
 module.exports = router;
