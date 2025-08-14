@@ -1,6 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const MenuItem = require('../models/MenuItem');
 const Restaurant = require('../models/Restaurant');
+const fs = require('fs');
+const path = require('path');
 
 // @desc    Create menu item
 // @route   POST /api/restaurants/:restaurantId/menu
@@ -39,7 +41,9 @@ const getMenuItems = asyncHandler(async (req, res) => {
   res.status(200).json(menuItems);
 });
 
-// update menu
+// @desc    Update menu item
+// @route   PUT /api/restaurants/:restaurantId/menu/:id
+// @access  Private
 const updateMenuItem = asyncHandler(async (req, res) => {
   const restaurant = await Restaurant.findOne({
     _id: req.params.restaurantId,
@@ -69,6 +73,13 @@ const updateMenuItem = asyncHandler(async (req, res) => {
   menuItem.isVegetarian = req.body.isVegetarian === 'true' || menuItem.isVegetarian;
   
   if (req.file) {
+    // Delete old image if exists
+    if (menuItem.image) {
+      const oldImagePath = path.join(__dirname, '../public', menuItem.image);
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+      }
+    }
     menuItem.image = `/uploads/menu-items/${req.file.filename}`;
   }
 
@@ -93,37 +104,52 @@ const getMenuItem = asyncHandler(async (req, res) => {
   res.status(200).json(menuItem);
 });
 
-// Add this to your existing controller
 // @desc    Delete menu item
 // @route   DELETE /api/restaurants/:restaurantId/menu/:id
 // @access  Private
 const deleteMenuItem = asyncHandler(async (req, res) => {
+  console.log(`Deleting menu item ${req.params.id} from restaurant ${req.params.restaurantId}`);
+
+  // Verify restaurant ownership
   const restaurant = await Restaurant.findOne({
     _id: req.params.restaurantId,
     owner: req.user.id
   });
 
   if (!restaurant) {
+    console.log('Deletion failed - restaurant not found or not owned by user');
     res.status(403);
     throw new Error('Not authorized to modify items in this restaurant');
   }
 
+  // Find and delete the menu item
   const menuItem = await MenuItem.findOneAndDelete({
     _id: req.params.id,
     restaurant: req.params.restaurantId
   });
 
   if (!menuItem) {
+    console.log('Menu item not found in database');
     res.status(404);
     throw new Error('Menu item not found');
   }
 
-  // TODO: Add image file deletion logic here if needed
+  // Delete associated image file if exists
+  if (menuItem.image) {
+    const imagePath = path.join(__dirname, '../public', menuItem.image);
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+      console.log('Deleted image file:', imagePath);
+    }
+  }
 
-  res.status(200).json({ success: true, data: {} });
+  console.log('Successfully deleted menu item:', menuItem);
+  res.status(200).json({ 
+    success: true, 
+    data: menuItem 
+  });
 });
 
-// all exports
 module.exports = {
   createMenuItem,
   getMenuItems,
