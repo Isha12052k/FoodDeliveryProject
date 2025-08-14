@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Restaurants from './pages/Restaurants';
 import AddRestaurantForm from './components/AddRestaurantForm';
 import EditRestaurantForm from './components/EditRestaurantForm';
+import AddMenuItemForm from './pages/AddMenuItemForm';
 
 function App() {
   return (
@@ -23,6 +24,10 @@ function App() {
         <Route path="/restaurants" element={<Restaurants />} />
         <Route path="/restaurants/new" element={<AddRestaurantForm />} />
         <Route path="/restaurants/edit/:id" element={<EditRestaurantForm />} />
+        <Route 
+  path="/restaurants/:restaurantId/menu/new" 
+  element={<AddMenuItemForm />} 
+/>
       </Routes>
     </Router>
   );

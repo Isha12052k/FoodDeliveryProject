@@ -1,37 +1,37 @@
 const asyncHandler = require('express-async-handler');
 const MenuItem = require('../models/MenuItem');
+const Restaurant = require('../models/Restaurant');
 
-// @desc    Create a menu item
+// @desc    Create menu item
 // @route   POST /api/restaurants/:restaurantId/menu
-// @access  Private (Restaurant Owner)
+// @access  Private
 const createMenuItem = asyncHandler(async (req, res) => {
-  const { name, description, price, category, isVegetarian } = req.body;
-  const restaurantId = req.params.restaurantId;
-
-  // Validate restaurant ownership (ensure user owns the restaurant)
+  // Validate restaurant ownership
   const restaurant = await Restaurant.findOne({
-    _id: restaurantId,
+    _id: req.params.restaurantId,
     owner: req.user.id
   });
+
   if (!restaurant) {
-    res.status(404);
-    throw new Error('Restaurant not found or unauthorized');
+    res.status(403);
+    throw new Error('Not authorized to add items to this restaurant');
   }
 
+  // Create menu item
   const menuItem = await MenuItem.create({
-    name,
-    description,
-    price,
-    category,
-    isVegetarian,
-    restaurant: restaurantId,
-    image: req.file ? req.file.path : undefined // If using Multer for uploads
+    name: req.body.name,
+    description: req.body.description,
+    price: req.body.price,
+    category: req.body.category,
+    isVegetarian: req.body.isVegetarian === 'true',
+    restaurant: req.params.restaurantId,
+    image: req.file ? `/uploads/menu-items/${req.file.filename}` : null
   });
 
   res.status(201).json(menuItem);
 });
 
-// @desc    Get all menu items for a restaurant
+// @desc    Get menu items
 // @route   GET /api/restaurants/:restaurantId/menu
 // @access  Public
 const getMenuItems = asyncHandler(async (req, res) => {
