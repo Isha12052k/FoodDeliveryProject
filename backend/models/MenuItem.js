@@ -41,6 +41,7 @@ const menuItemSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Index for faster querying by restaurant
-menuItemSchema.index({ restaurant: 1 });
+menuItemSchema.index({ restaurant: 1 }); // Faster querying by restaurant
+menuItemSchema.index({ category: 1 });   // Optional: For filtering by category
 
 module.exports = mongoose.model('MenuItem', menuItemSchema);
