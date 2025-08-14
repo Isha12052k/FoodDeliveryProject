@@ -39,7 +39,64 @@ const getMenuItems = asyncHandler(async (req, res) => {
   res.status(200).json(menuItems);
 });
 
+
+const updateMenuItem = asyncHandler(async (req, res) => {
+  const restaurant = await Restaurant.findOne({
+    _id: req.params.restaurantId,
+    owner: req.user.id
+  });
+
+  if (!restaurant) {
+    res.status(403);
+    throw new Error('Not authorized to modify items in this restaurant');
+  }
+
+  const menuItem = await MenuItem.findOne({
+    _id: req.params.id,
+    restaurant: req.params.restaurantId
+  });
+
+  if (!menuItem) {
+    res.status(404);
+    throw new Error('Menu item not found');
+  }
+
+  // Update fields
+  menuItem.name = req.body.name || menuItem.name;
+  menuItem.description = req.body.description || menuItem.description;
+  menuItem.price = req.body.price || menuItem.price;
+  menuItem.category = req.body.category || menuItem.category;
+  menuItem.isVegetarian = req.body.isVegetarian === 'true' || menuItem.isVegetarian;
+  
+  if (req.file) {
+    menuItem.image = `/uploads/menu-items/${req.file.filename}`;
+  }
+
+  const updatedMenuItem = await menuItem.save();
+  res.status(200).json(updatedMenuItem);
+});
+
+// @desc    Get single menu item
+// @route   GET /api/restaurants/:restaurantId/menu/:id
+// @access  Public
+const getMenuItem = asyncHandler(async (req, res) => {
+  const menuItem = await MenuItem.findOne({
+    _id: req.params.id,
+    restaurant: req.params.restaurantId
+  });
+
+  if (!menuItem) {
+    res.status(404);
+    throw new Error('Menu item not found');
+  }
+
+  res.status(200).json(menuItem);
+});
+
+// Update the exports at the bottom
 module.exports = {
   createMenuItem,
-  getMenuItems
+  getMenuItems,
+  getMenuItem,
+  updateMenuItem
 };

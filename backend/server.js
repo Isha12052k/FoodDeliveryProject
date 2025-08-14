@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const restaurantRoutes = require('./routes/restaurantRoutes');
 const menuItemRoutes = require('./routes/menuItemRoutes');
 const uploadMiddleware = require('./middleware/uploadMiddleware');
+const path = require('path');
 
 // Load environment variables
 dotenv.config();
@@ -25,12 +26,17 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something broke!', error: err.message });
+});
+
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/restaurants', menuItemRoutes);
-app.use('/uploads', express.static('uploads')); 
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Start server
 const PORT = process.env.PORT || 5000;
