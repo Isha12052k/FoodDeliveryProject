@@ -39,7 +39,7 @@ const getMenuItems = asyncHandler(async (req, res) => {
   res.status(200).json(menuItems);
 });
 
-
+// update menu
 const updateMenuItem = asyncHandler(async (req, res) => {
   const restaurant = await Restaurant.findOne({
     _id: req.params.restaurantId,
