@@ -59,6 +59,7 @@ const getRestaurants = asyncHandler(async (req, res) => {
 // @desc    Get single restaurant
 // @route   GET /api/restaurants/:id
 // @access  Private
+//here is the get api
 const getRestaurant = asyncHandler(async (req, res) => {
   try {
     console.log('Searching for restaurant:', {
