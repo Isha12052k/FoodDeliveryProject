@@ -11,26 +11,25 @@ const RestaurantList = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [restaurantToDelete, setRestaurantToDelete] = useState(null);
 
-  useEffect(() => {
-    const fetchRestaurants = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/restaurants', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('userToken')}`
-          }
-        });
-        setRestaurants(response.data);
-      } catch (err) {
-        console.error('Fetch error:', err);
-        setError('Failed to fetch restaurants');
-        toast.error('Failed to load restaurants. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRestaurants();
-  }, []);
+useEffect(() => {
+  const fetchRestaurants = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/restaurants', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('userToken')}`
+        }
+      });
+      setRestaurants(response.data);
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setError('Failed to fetch restaurants. Is the server running?');
+      toast.error('Failed to load restaurants. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchRestaurants();
+}, []);
 
   const handleDeleteClick = (restaurant) => {
     setRestaurantToDelete(restaurant);
@@ -112,7 +111,14 @@ const RestaurantList = () => {
                     Delete
                   </button>
                 </div>
+
               </div>
+              <Link 
+      to={`/restaurants/${restaurant._id}/menu/new`}
+      className="text-green-600 hover:text-green-800"
+    >
+      Add Menu Item
+    </Link>
             </div>
           ))}
         </div>

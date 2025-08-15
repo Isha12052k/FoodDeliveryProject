@@ -42,7 +42,10 @@ const createRestaurant = asyncHandler(async (req, res) => {
 // @access  Private
 const getRestaurants = asyncHandler(async (req, res) => {
   try {
-    const restaurants = await Restaurant.find({ owner: req.user.id });
+    const restaurants = await Restaurant.find({ 
+      owner: req.user.id,
+      isDeleted: false
+    });
     res.status(200).json(restaurants);
   } catch (error) {
     console.error('Error fetching restaurants:', error);
@@ -57,17 +60,49 @@ const getRestaurants = asyncHandler(async (req, res) => {
 // @route   GET /api/restaurants/:id
 // @access  Private
 const getRestaurant = asyncHandler(async (req, res) => {
-  const restaurant = await Restaurant.findOne({
-    _id: req.params.id,
-    owner: req.user.id
-  });
+  try {
+    console.log('Searching for restaurant:', {
+      id: req.params.id,
+      user: req.user.id
+    });
 
-  if (!restaurant) {
-    res.status(404);
-    throw new Error('Restaurant not found');
+    const restaurant = await Restaurant.findOne({
+      _id: req.params.id,
+      isDeleted: false
+    });
+
+    if (!restaurant) {
+      console.log('No restaurant found with ID:', req.params.id);
+      return res.status(404).json({
+        success: false,
+        message: 'Restaurant not found'
+      });
+    }
+
+    if (restaurant.owner.toString() !== req.user.id) {
+      console.log('Ownership mismatch:', {
+        restaurantOwner: restaurant.owner,
+        requestingUser: req.user.id
+      });
+      return res.status(403).json({
+        success: false,
+        message: 'Not authorized to access this restaurant'
+      });
+    }
+
+    console.log('Restaurant found:', restaurant);
+    res.status(200).json({
+      success: true,
+      data: restaurant
+    });
+  } catch (error) {
+    console.error('Error fetching restaurant:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
   }
-
-  res.status(200).json(restaurant);
 });
 
 // @desc    Update restaurant
@@ -138,7 +173,6 @@ const deleteRestaurant = asyncHandler(async (req, res) => {
   });
 });
 
-// Update exports
 module.exports = {
   createRestaurant,
   getRestaurants,

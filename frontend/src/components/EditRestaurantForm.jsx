@@ -18,40 +18,71 @@ const EditRestaurantForm = () => {
   ];
 
   // Fetch restaurant data
-  useEffect(() => {
-    const fetchRestaurant = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/restaurants/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('userToken')}`
-          }
-        });
-        
-        // Ensure openingHours has all days
-        const completeOpeningHours = DAYS_OF_WEEK.map(day => {
-          const existingDay = response.data.openingHours?.find(d => d.day === day);
-          return existingDay || {
-            day,
-            open: '09:00',
-            close: '17:00',
-            isClosed: false
-          };
-        });
+useEffect(() => {
+  const fetchRestaurant = async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      if (!token) {
+        toast.error('Please login first');
+        navigate('/login');
+        return;
+      }
 
-        setInitialValues({
-          ...response.data,
-          openingHours: completeOpeningHours
-        });
-      } catch (error) {
+      const response = await axios.get(`http://localhost:5000/api/restaurants/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      // Ensure all required fields have defaults
+      const completeData = {
+        name: response.data.name || '',
+        description: response.data.description || '',
+        cuisineType: response.data.cuisineType || [],
+        address: response.data.address || {
+          street: '',
+          city: '',
+          state: '',
+          zipCode: ''
+        },
+        contact: response.data.contact || {
+          phone: '',
+          email: ''
+        },
+        openingHours: response.data.openingHours || []
+      };
+
+      // Ensure openingHours has all days
+      const completeOpeningHours = DAYS_OF_WEEK.map(day => {
+        const existingDay = completeData.openingHours.find(d => d.day === day);
+        return existingDay || {
+          day,
+          open: '09:00',
+          close: '17:00',
+          isClosed: false
+        };
+      });
+
+      setInitialValues({
+        ...completeData,
+        openingHours: completeOpeningHours
+      });
+    } catch (error) {
+      if (error.response?.status === 401) {
+        toast.error('Session expired. Please login again.');
+        localStorage.removeItem('userToken');
+        navigate('/login');
+      } else {
         toast.error('Failed to load restaurant data');
         navigate('/restaurants');
-      } finally {
-        setLoading(false);
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchRestaurant();
-  }, [id, navigate]);
+  fetchRestaurant();
+}, [id, navigate]);
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -124,29 +155,30 @@ const EditRestaurantForm = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Cuisine Type</label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {['Italian', 'Indian', 'Mexican', 'Chinese', 'Japanese', 'American', 'Mediterranean', 'Other'].map((cuisine) => (
-                    <div key={cuisine} className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id={cuisine}
-                        checked={values.cuisineType.includes(cuisine)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setFieldValue('cuisineType', [...values.cuisineType, cuisine]);
-                          } else {
-                            setFieldValue('cuisineType', values.cuisineType.filter(c => c !== cuisine));
-                          }
-                        }}
-                        className="mr-2"
-                      />
-                      <label htmlFor={cuisine}>{cuisine}</label>
-                    </div>
-                  ))}
-                </div>
-                <ErrorMessage name="cuisineType" component="div" className="text-red-500 text-sm" />
-              </div>
+  <label className="block text-gray-700 mb-2">Cuisine Type</label>
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+    {['Italian', 'Indian', 'Mexican', 'Chinese', 'Japanese', 'American', 'Mediterranean', 'Other'].map((cuisine) => (
+      <div key={cuisine} className="flex items-center">
+        <input
+          type="checkbox"
+          id={cuisine}
+          checked={values.cuisineType?.includes(cuisine) || false}
+          onChange={(e) => {
+            const currentCuisines = values.cuisineType || [];
+            if (e.target.checked) {
+              setFieldValue('cuisineType', [...currentCuisines, cuisine]);
+            } else {
+              setFieldValue('cuisineType', currentCuisines.filter(c => c !== cuisine));
+            }
+          }}
+          className="mr-2"
+        />
+        <label htmlFor={cuisine}>{cuisine}</label>
+      </div>
+    ))}
+  </div>
+  <ErrorMessage name="cuisineType" component="div" className="text-red-500 text-sm" />
+</div>
             </div>
 
             {/* Address Section */}
