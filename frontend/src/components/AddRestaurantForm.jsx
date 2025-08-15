@@ -265,3 +265,5 @@ const AddRestaurantForm = () => {
 };
 
 export default AddRestaurantForm;
+
+//add functionality implemented
