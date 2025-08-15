@@ -59,6 +59,7 @@ const getRestaurants = asyncHandler(async (req, res) => {
 // @desc    Get single restaurant
 // @route   GET /api/restaurants/:id
 // @access  Private
+//here is the get api
 const getRestaurant = asyncHandler(async (req, res) => {
   try {
     console.log('Searching for restaurant:', {
@@ -109,6 +110,10 @@ const getRestaurant = asyncHandler(async (req, res) => {
 // @route   PUT /api/restaurants/:id
 // @access  Private
 const updateRestaurant = asyncHandler(async (req, res) => {
+  console.log('Update request body:', req.body); // Add this
+  console.log('Update params:', req.params); // Add this
+  console.log('Authenticated user:', req.user); // Add this
+
   const { 
     name,
     description,
@@ -124,6 +129,7 @@ const updateRestaurant = asyncHandler(async (req, res) => {
   });
 
   if (!restaurant) {
+    console.log('Restaurant not found or not owned by user');
     res.status(404);
     throw new Error('Restaurant not found');
   }
@@ -135,6 +141,8 @@ const updateRestaurant = asyncHandler(async (req, res) => {
   restaurant.address = address || restaurant.address;
   restaurant.contact = contact || restaurant.contact;
   restaurant.openingHours = openingHours || restaurant.openingHours;
+
+  console.log('Updated restaurant data:', restaurant); // Add this
 
   const updatedRestaurant = await restaurant.save();
 

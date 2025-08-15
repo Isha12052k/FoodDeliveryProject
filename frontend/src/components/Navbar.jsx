@@ -11,8 +11,8 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
-      <Link to="/" className="text-2xl font-bold">Task Manager</Link>
+    <nav className="bg-stone-900 text-amber-50 p-4 flex justify-between items-center shadow-lg">
+      <Link to="/" className="text-2xl font-bold">Food Delivery System</Link>
       <div>
         {user ? (
           <>
@@ -30,7 +30,7 @@ const Navbar = () => {
             <Link to="/login" className="mr-4">Login</Link>
             <Link
               to="/register"
-              className="bg-green-500 px-4 py-2 rounded hover:bg-green-700"
+              className="bg-amber-100 hover:bg-amber-200 text-amber-900 px-4 py-2 rounded-lg border border-amber-300 hover:border-amber-400 transition-colors duration-200 shadow-sm hover:shadow-md"
             >
               Register
             </Link>
