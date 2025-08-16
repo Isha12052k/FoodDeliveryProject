@@ -29,6 +29,8 @@ const createMenuItem = asyncHandler(async (req, res) => {
     restaurant: req.params.restaurantId,
     image: req.file ? `/uploads/menu-items/${req.file.filename}` : null
   });
+console.log('Uploaded image path:', req.file ? `/uploads/menu-items/${req.file.filename}` : null);
+console.log('Full path:', path.join(__dirname, 'public', 'uploads', 'menu-items', req.file.filename));
 
   res.status(201).json(menuItem);
 });
@@ -85,6 +87,7 @@ const updateMenuItem = asyncHandler(async (req, res) => {
 
   const updatedMenuItem = await menuItem.save();
   res.status(200).json(updatedMenuItem);
+  console.log('Retrieved menu items:', menuItems.map(item => item.image));
 });
 
 // @desc    Get single menu item

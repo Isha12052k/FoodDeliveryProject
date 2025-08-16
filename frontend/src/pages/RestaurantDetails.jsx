@@ -230,14 +230,18 @@ const RestaurantDetails = () => {
                     {item.image && (
                       <div className="h-48 overflow-hidden">
                         <img 
-                          src={`http://localhost:5000${item.image}`}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.src = '/placeholder-food.jpg';
-                            e.target.alt = 'Image not available';
-                          }}
-                        />
+  src={item.image 
+    ? `http://localhost:5000${item.image}`
+    : 'http://localhost:5000/public/images/placeholder-food.jpg'
+  }
+  alt={item.name}
+  className="w-full h-full object-cover"
+  onError={(e) => {
+    console.error('Image load failed:', e.target.src);
+    e.target.src = 'http://localhost:5000/public/images/placeholder-food.jpg';
+    e.target.alt = 'Image not available';
+  }}
+/>
                       </div>
                     )}
                     <div className="p-4">

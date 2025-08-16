@@ -6,6 +6,7 @@ const restaurantRoutes = require('./routes/restaurantRoutes');
 const menuItemRoutes = require('./routes/menuItemRoutes');
 const uploadMiddleware = require('./middleware/uploadMiddleware');
 const path = require('path');
+const fs = require('fs');
 
 // Load environment variables
 dotenv.config();
@@ -24,6 +25,8 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
 app.use(express.json());
 
 app.use((err, req, res, next) => {
@@ -32,11 +35,36 @@ app.use((err, req, res, next) => {
 });
 
 // Routes
+app.get('/debug-image-path', (req, res) => {
+  const imagePath = path.join(__dirname, 'public', 'images', 'placeholder-food.jpg');
+  const publicPath = path.join(__dirname, 'public');
+  
+  try {
+    res.json({
+      exists: fs.existsSync(imagePath),
+      imagePath: imagePath,
+      publicPath: publicPath,
+      publicDirContents: fs.readdirSync(publicPath),
+      imagesDirContents: fs.readdirSync(path.join(publicPath, 'images')),
+      currentDir: __dirname,
+      staticConfig: {
+        public: app._router.stack.filter(layer => layer.name === 'serveStatic').map(layer => layer.regexp)
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 app.use('/api/auth', require('./routes/authRoutes'));
 
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/restaurants', menuItemRoutes);
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Start server
 const PORT = process.env.PORT || 5000;
