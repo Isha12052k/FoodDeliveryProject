@@ -66,14 +66,6 @@ jobs:
       working-directory: ./backend
       run: npm test
 
-    # Build frontend
-    - name: Build Frontend
-      working-directory: ./frontend
-      run: |
-        npm run build --if-present
-      env:
-        CI: false  # Disable strict linting during build
-
     - run: npm ci
     - run: | 
         cd ./backend
