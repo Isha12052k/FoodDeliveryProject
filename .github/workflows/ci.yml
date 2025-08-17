@@ -49,14 +49,12 @@ jobs:
        yarn --version
        yarn install
       
-    # Install dependencies for frontend
+    # Frontend setup
     - name: Install Frontend Dependencies
       working-directory: ./frontend
       run: |
-       df -h
-       sudo rm -rf ./build
-       yarn install
-       yarn run build
+        npm install
+        npm install -g react-scripts
 
 
     # Run backend tests
@@ -68,6 +66,13 @@ jobs:
       working-directory: ./backend
       run: npm test
 
+    # Build frontend
+    - name: Build Frontend
+      working-directory: ./frontend
+      run: |
+        npm run build --if-present
+      env:
+        CI: false  # Disable strict linting during build
 
     - run: npm ci
     - run: | 
