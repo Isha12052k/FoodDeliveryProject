@@ -45,7 +45,7 @@ const AddRestaurantForm = () => {
       email: Yup.string().email('Invalid email').required('Email is required')
     })
   });
-
+//added
   const onSubmit = async (values) => {
   try {
     setIsSubmitting(true);
