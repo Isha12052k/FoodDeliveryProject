@@ -42,7 +42,7 @@ const EditRestaurantForm = () => {
       }
 
       await axios.put(
-        `http://localhost:5000/api/restaurants/${id}`,
+        `http://localhost:5001/api/restaurants/${id}`,
         values,
         {
           headers: {
@@ -76,7 +76,7 @@ useEffect(() => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:5000/api/restaurants/${id}`, {
+      const response = await axios.get(`http://localhost:5001/api/restaurants/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

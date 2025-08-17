@@ -30,7 +30,7 @@ const AddMenuItemForm = () => {
 
     try {
       await axios.post(
-        `http://localhost:5000/api/restaurants/${restaurantId}/menu`,
+        `http://localhost:5001/api/restaurants/${restaurantId}/menu`,
         data,
         {
           headers: {

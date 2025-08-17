@@ -15,7 +15,7 @@ const RestaurantList = () => {
   useEffect(() => {
     const fetchRestaurants = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/restaurants', {
+        const response = await axios.get('http://localhost:5001/api/restaurants', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('userToken')}`
           }
@@ -39,7 +39,7 @@ const RestaurantList = () => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/restaurants/${restaurantToDelete._id}`, {
+      await axios.delete(`http://localhost:5001/api/restaurants/${restaurantToDelete._id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('userToken')}`
         }

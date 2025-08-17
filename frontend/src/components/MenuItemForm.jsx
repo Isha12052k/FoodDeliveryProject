@@ -31,7 +31,7 @@ const MenuItemForm = () => {
         formPayload.append('image', formData.image);
       }
 
-      await axios.post(`http://localhost:5000/api/restaurants/${restaurantId}/menu`, formPayload, {
+      await axios.post(`http://localhost:5001/api/restaurants/${restaurantId}/menu`, formPayload, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('userToken')}`

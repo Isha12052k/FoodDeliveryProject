@@ -2,7 +2,7 @@ const axios = require('axios');
 
 async function testRestaurantEndpoint() {
   try {
-    const response = await axios.get('http://localhost:5000/api/restaurants/SAMPLE_RESTAURANT_ID', {
+    const response = await axios.get('http://localhost:5001/api/restaurants/SAMPLE_RESTAURANT_ID', {
       headers: {
         Authorization: `Bearer YOUR_TEST_TOKEN`
       }

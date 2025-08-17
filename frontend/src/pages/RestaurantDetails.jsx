@@ -19,12 +19,12 @@ const RestaurantDetails = () => {
   const fetchRestaurantData = async () => {
     try {
       const [restaurantRes, menuRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/restaurants/${id}`, {
+        axios.get(`http://localhost:5001/api/restaurants/${id}`, {
           headers: { 
             Authorization: `Bearer ${localStorage.getItem('userToken')}`
           }
         }),
-        axios.get(`http://localhost:5000/api/restaurants/${id}/menu`, {
+        axios.get(`http://localhost:5001/api/restaurants/${id}/menu`, {
           headers: { 
             Authorization: `Bearer ${localStorage.getItem('userToken')}`
           }
@@ -70,7 +70,7 @@ const RestaurantDetails = () => {
     setIsDeleting(true);
     try {
       await axios.delete(
-        `http://localhost:5000/api/restaurants/${id}/menu/${menuItemToDelete._id}`,
+        `http://localhost:5001/api/restaurants/${id}/menu/${menuItemToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('userToken')}`
@@ -231,14 +231,14 @@ const RestaurantDetails = () => {
                       <div className="h-48 overflow-hidden">
                         <img 
   src={item.image 
-    ? `http://localhost:5000${item.image}`
-    : 'http://localhost:5000/public/images/placeholder-food.jpg'
+    ? `http://localhost:5001${item.image}`
+    : 'http://localhost:5001/public/images/placeholder-food.jpg'
   }
   alt={item.name}
   className="w-full h-full object-cover"
   onError={(e) => {
     console.error('Image load failed:', e.target.src);
-    e.target.src = 'http://localhost:5000/public/images/placeholder-food.jpg';
+    e.target.src = 'http://localhost:5001/public/images/placeholder-food.jpg';
     e.target.alt = 'Image not available';
   }}
 />

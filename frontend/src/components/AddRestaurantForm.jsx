@@ -50,7 +50,7 @@ const AddRestaurantForm = () => {
   try {
     setIsSubmitting(true);
     const response = await axios.post(
-      'http://localhost:5000/api/restaurants', // Full URL
+      'http://localhost:5001/api/restaurants', // Full URL
       values,
       {
         headers: {

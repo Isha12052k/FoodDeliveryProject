@@ -22,7 +22,7 @@ const EditMenuItemForm = () => {
     const fetchMenuItem = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/restaurants/${restaurantId}/menu/${menuItemId}`,
+          `http://localhost:5001/api/restaurants/${restaurantId}/menu/${menuItemId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('userToken')}`
@@ -66,7 +66,7 @@ const EditMenuItemForm = () => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/restaurants/${restaurantId}/menu/${menuItemId}`,
+        `http://localhost:5001/api/restaurants/${restaurantId}/menu/${menuItemId}`,
         data,
         {
           headers: {
@@ -154,7 +154,7 @@ const EditMenuItemForm = () => {
           <label className="block mb-1">Current Image</label>
           {currentImage ? (
             <img 
-              src={`http://localhost:5000${currentImage}`} 
+              src={`http://localhost:5001${currentImage}`} 
               alt="Current menu item" 
               className="h-32 w-full object-cover mb-2"
             />
