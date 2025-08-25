@@ -27,11 +27,11 @@ A full-stack web application for managing restaurants and menus, with future sco
 1. Create a .env file in the backend directory
   MONGO_URI=your_mongodb_atlas_connection_string
   JWT_SECRET=your_jwt_secret_key
-  PORT=5000
+  PORT=5001
 
 2. Configure the API base URL in frontend/src/axiosConfig.jsx
     const axiosInstance = axios.create({
-      baseURL: 'http://localhost:5000/api',
+      baseURL: 'http://localhost:5001/api',
       headers: { 'Content-Type': 'application/json' },
     });
 
